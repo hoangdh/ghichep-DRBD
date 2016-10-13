@@ -1,287 +1,68 @@
-# Hướng dẫn cài dặt và cấu hình DRBD cluster trên CentOS 7
+# Tìm hiểu về DRBD
 
 ### Menu
 
-[1. Chuẩn bị] (#1)
+[1. DRBD là gì?] (#1)
 
-[2. Các bước tiến hành] (#2)
+[2. Quá trình hoạt động cơ bản của DRBD] (#2)
 
-- [2.1 Cài đặt DRBD] (#2.1)
-- [2.2 Cấu hình DRBD] (#2.2)
-- [2.3 Khởi động trên mỗi node] (#2.3)
-- [2.4 Bật và kích hoạt DRBD daemon] (#2.4)
-- [2.5 Kích hoạt trên node chính] (#2.5)
-- [2.6 Tạo mà mount file system DRBD] (#2.6)
-- [2.7 Test hoạt động replicate] (#2.7)
+[3. Các chế độ replication của DRBD] (#3)
 
-[3. Tham khảo] (#3)
+- [3.1 Protocol A] (#3.1)
+- [3.2 Protocol B] (#3.2)
+- [3.3 Protocol C] (#3.3)
+    
+[4. Cấu trúc của DRBD] (#4)
 
-<a name="1"></a>
-## 1. Chuẩn bị
+[5. Tham khảo] (#5)
 
-- 2 server sử dụng OS CentOS
-- 2 ổ cứng có cùng dung lượng được gắn vào các node
-- Cấu hình hostname cho các server
-- Mở port 7788 trên các server
+## 1. DRBD là gì? <a name="1"></a>
 
-Cụ thể:
+`DRBD` viết tắt của **Distributed Replicated Block Device**, là một tiện ích sử dụng để nâng cao tính sẵn sàng của hệ thống. Nó là được xây dựng trên nền ứng dụng mã nguồn mở để đơn giản hóa việc chia sẻ các dữ liệu trong hệ thống lưu trữ với nhau qua đường truyền mạng. Chúng ta có thể hiểu nôm na rằng đây là RAID-1 sử dụng các giao tiếp mạng để trao đổi dữ liệu cho nhau.
 
-**Node 1**
+Về tổng quan, DRBD gồm 2 server cung cấp 2 tài nguyên lưu trữ độc lập, không liên quan gì với nhau. Trong một thời điểm, một server sẽ được cấu hình làm node primary đọc và ghi dữ liệu; node còn lại là secondary làm nhiệm vụ đồng bộ dữ liệu từ node primary để đảm bảo tính đồng nhất dữ liệu 2 node.
 
-```
-OS: CentOS 7 64 bit
-Device: /dev/sdb - 8GB
-Hostname: node1
-IP: 192.168.100.196
-Gateway: 192.168.100.1
-Network: 192.168.100.0/24
-```
+## 2. Quá trình hoạt động cơ bản của DRBD <a name="2"></a>
 
-**Node 2**
+Nhìn chung, các dịch vụ đồng bộ dữ liệu hoạt động ở chế độ Active - Passive. Ở chế độ này, node chính (primary) sẽ lắng nghe toàn bộ các thao tác (đọc, ghi) của người dùng. Node phụ (secondary) sẽ được kích hoạt thành node chính khi một giải pháp cluster nào đó phát hiện node chính down. Việc ghi dữ liệu sẽ được xảy ra đồng thời trên cả 2 node. DRBD hỗ trợ 2 kiểu ghi dữ liệu là fully synchronous and asynchronous.
 
-```
-OS: CentOS 7 64 bit
-Device: /dev/sdb - 8GB
-Hostname: node2
-IP: 192.168.100.197
-Gateway: 192.168.100.1
-Network: 192.168.100.0/24
-```
+<img width=150% src="http://i1363.photobucket.com/albums/r714/HoangLove9z/DRDB%20Operations_zpsa5lx9veo.jpg" />
 
-<a name="2"></a>
-## 2. Các bước tiến hành
+DRBD cũng có thể hỗ trợ chế độ Active - Active, điều đó có nghĩa là việc ghi dữ liệu sẽ đồng thời xảy ra trên 2 node. Mode này được dựa trên một hệ thống chia sẻ tập tin, chẳng hạn như Global File System (GFS) hoặc các phiên bản Oracle Cluster File System 2 (OCFS2), trong đó bao gồm khả năng phân phối và quản lý file. 
 
-<a name="2.1"></a>
-### 2.1 Cài đặt DRBD
+## 3. Các chế độ replication của DRBD <a name="3"></a>
 
-- Trước khi cài đặt, chúng ta phải cấu hình hostname cho mỗi node và ghi chúng vào `hosts`
+DRBD hỗ trợ 3 chế độ replication, cụ thể như sau:
 
-```
-[root@node1 ~] hostnamectl set-hostname node1
-```
-
-```
-[root@node2 ~] hostnamectl set-hostname node2
-```
+### 3.1 Protocol A <a name="3.1"></a>
 
-- Ghi thêm vào `hosts` của mỗi server
+- Giao thức đồng bộ không đồng thời. Các thao tác ghi dữ liệu trên node chính sẽ được thực thi đến khi nào hoàn thành tác vụ, các gói tin replication được lưu trữ ở bộ đệm TCP. Trong trường hợp fail-over, dữ liệu này có thể bị mất.
 
-```
-vi /etc/hosts
-```
+### 3.2 Protocol B <a name="3.2"></a>
 
-```
-[...]
-192.168.100.196 node1
-192.168.100.197 node2
-```
+- Giao thức đồng bộ đồng thời trên RAM (semi-synchronous), các thao tác ghi được thực hiện trên node chính ngay khi có yêu cầu, các gói tin replication được gửi ngay khi node chính đã ghi xong.
+Khi fail-over, dữ liệu sẽ bị mất.
 
-- Tiếp theo, chúng ta cài đặt DRBD trên cả 2 server. Đầu tiên, chúng ta thêm repos của DRBD và key 
+### 3.3 Protocol C <a name="3.3"></a>
 
-```
-rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-pm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
-``` 
+- Giao thức đồng bộ, dữ liệu được ghi hoàn thiện chỉ khi nào 2 node chính và phụ xác nhận là đã hoàn thành. Giao thức này đảm bảo tính an toàn dữ liệu và được sử dụng phổ biến khi cấu hình DRBD.
 
-- Trước khi cài, chúng ta kiểm tra phiên bản mới nhất của DRBD.
+## 4. Cấu trúc của DRBD <a name="4"></a>
 
-```
-yum info *drbd* | grep Name
+DRBD được chia làm 2 thành phần:
 
-Name        : drbd84-utils
-Name        : drbd84-utils-sysvinit
-Name        : kmod-drbd84
-```
+<img width=150% src="http://i1363.photobucket.com/albums/r714/HoangLove9z/DRDB%20Architecture_zpsbij78rwi.jpg" />
 
-Sau khi chạy lệnh trên, chúng ta thấy phiên bản hiện tại là **drbd84**
+- Module trong kernel có nhiệm vụ thiết lập các space-user dùng để quản lý các disk DRBD, nó thực hiện các quyền điều khiển với các thiết bị virtual block (khi replicate dữ liệu local với sang máy remote). Giống như một virtual disk, DRBD cung cấp một mô hình linh loạt cho hầu hết các loại ứng dụng đều có thể sử dụng.
+- Các module DRBD khởi tạo những chỉ dẫn các điểu khiển cơ bản được khai báo trong brbd.conf, ngoài ra còn phân định ra các thành phần được xác định bởi IP và Port
 
-- Chúng ta tiếp tục bước cài đặt DRBD trên cả 2 server.
+Một vài câu lệnh dùng để quản lý cài đặt DRBD:
 
-```
-yum -y install drbd84-utils kmod-drbd84
-```
+- **DRBDadm**: Công cụ quản trị DRBD cao nhất
+- **DRBDsetup**: Cấu hình DRBD nạp vào kernel
+- **DRBDmeta**: Cho phép tạo, dump, khôi phục và chỉnh sửa cấu trúc của meta-data.
 
-**Chú ý**: Nếu key trên bị lỗi, hãy làm bước sau để import các key có sẵn ở `/etc/pki/rpm-gpg/` và làm lại bước cài đặt trên.
+## 5. Tham khảo <a name="5"></a>
 
-```
-rpm --import /etc/pki/rpm-gpg/*
-```
-
-- Kích hoạt module DRBD trên cả 2 server
-
-```
-modprobe drbd
-```
-
-- Kiểm tra lại xem DRBD đã hoạt động:
-
-```
-lsmod | grep drbd
-
-drbd                  405309  0
-libcrc32c              12644  2 xfs,drbd
-```
-
-<a name="2.2"></a>
-### 2.2 Cấu hình DRBD
-
-File cấu hình chính của DRBD nằm là ` /etc/drbd.conf`. File này gọi lại các file cấu hình được khai báo trong phần nội dung. Các file `.res` dùng để khai báo tài nguyên trên mỗi server mà DRBD sử dụng.
-
-Chúng tạo một file có tên `testdata1.res` với nội dung như sau:
-
-```
-vi /etc/drbd.d/testdata1.res
-```
-
-```
-resource testdata1 {
-protocol C;          
-on node1 {
-                device /dev/drbd0;
-                disk /dev/sdb;
-                address 192.168.100.196:7788;
-                meta-disk internal;
-        }
-on node2 {
-                device /dev/drbd0;
-                disk /dev/sdb;
-                address 192.168.100.197:7788;
-                meta-disk internal;
-        }
-} 
-```
-**Giải thích:**
-
-- `resource testdata1`: Tên của resource
-- `Protocol C`: Các resource được cấu hình để synchronous replication. Chi tiết <a href="http://www.learnitguide.net/2016/07/what-is-drbd-how-drbd-works-drbd.html">tại đây</a>
-- `node1`, `node2`: Danh sách các node và các tùy chọn bên trong
-- `device /dev/drbd0`: Xác định thiết bị logic được DRBD sử dụng (Nên đặt giống nhau ở trên 2 server)
-- `disk /dev/sdb`: Xác định thiết bị vật lý dùng để tạo ra thiết bị logic bên trên, và không nhất thiết phải cùng trên trên 2 server.
-- `address 192.168.100.197:7788`: Xác định địa chỉ IP và Port của mỗi server
-- `meta-disk internal`: Cho phép sử dụng Meta-data mức nội bộ
-
-Sao chép file cấu hình sang server 2:
-
-```
-[root@node1 ~] scp /etc/drbd.d/testdata1.res node2:/etc/drbd.d/
-```
-
-<a name="2.3"></a>
-### 2.3 Khởi động trên mỗi node
-
-Trên server 1:
-
-```
-[root@node1 ~] drbdadm create-md testdata1
-```
-
-Trên server 2:
-
-```
-[root@node2 ~] drbdadm create-md testdata2
-```
-
-Khi thấy kết quả hiển thị như sau báo hiệu đã cấu hình thành công:
-
-```
-  --==  Thank you for participating in the global usage survey  ==--
-The server's response is:
-you are the 10680th user to install this version
-initializing activity log
-NOT initializing bitmap
-Writing meta data...
-New drbd meta data block successfully created.
-success
-```
-
-<a name="2.4"></a>
-### 2.4 Bật và kích hoạt DRBD daemon
-
-Ở trên 2 server, chúng ta bật và cho DRBD khởi động cùng hệ thống
-
-```
-systemctl start drbd
-systemctl enable drbd
-```
-
-<a name="2.5"></a>
-### 2.5 Kích hoạt trên node chính
-
-Tôi chọn node chính là node1, chúng ta cũng có thể chọn node2 làm node chính bằng cách chạy lệnh này lên node2.
-
-```
-[root@node1 ~] drbdadm primary testdata1 --force
-```
-Kiểm tra trạng thái:
-
-```
-[root@node1 ~]# cat /proc/drbd
-version: 8.4.7-1 (api:1/proto:86-101)
-GIT-hash: 3a6a769340ef93b1ba2792c6461250790795db49 build by phil@Build64R7, 2016-01-12 14:29:40
- 0: cs:Connected ro:Primary/Secondary ds:UpToDate/UpToDate C r-----
-    ns:1048508 nr:0 dw:0 dr:1049236 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
-```
-
-Hoặc dùng lệnh:
-
-```
-[root@node1 ~]# drbd-overview
- 0:testdata1/0  Connected Primary/Secondary UpToDate/UpToDate
-```
-
-**Chú ý**: Chúng ta kiểm tra liên tục bằng lệnh trên và khi nào lệnh trả về kết quả tương tự hoặc có chứa nội dung `Connected Primary/Secondary` thì mới có thể chuyển sang bước 2.6.
-
-<a name="2.6"></a>
-### 2.6 Tạo mà mount file system DRBD
-
-Tạo một file system và mount, ghi dữ liệu lên nó. Các bước thực hiện trên node chính - node mà bạn đã kích hoạt ở bước 2.5
-
-```
-[root@node1 ~]# mkfs.ext3 /dev/drbd0
-[root@node1 ~]# mount /dev/drbd0 /mnt
-[root@node1 ~]# touch /mnt/testfile
-[root@node1 ~]# ll /mnt/
-total 16
-drwx------ 2 root root 1384 Oct  12 08:29 lost+found
--rw-r--r-- 1 root root    0 Oct  12 08:31 testfile
-```
-
-<a name="2.7"></a>
-### 2.7 Test hoạt động replicate trên server 2
-
-Chúng ta chuyển primary node sang node2 để kiểm tra dữ liệu có được replicate
-
-Unmount file system trên node1
-
-```
-[root@node1 ~]# umount /mnt
-```
-
-Chuyển sang chế độ `secondary node` cho node1
-
-```
-[root@node1 ~] drbdadm secondary testdata1
-```
-
-Trên node2, chúng ta kích hoạt chế độ primary
-
-```
-[root@node2 ~] drbdadm primary testdata1
-```
-
-Mount và kiểm tra dữ liệu bên trong
-
-```
-[root@node2 ~]# mount /dev/drbd0 /mnt
-[root@node2 ~]# ll /mnt/
-total 16
-drwx------ 2 root root 1384 Oct  12 08:29 lost+found
--rw-r--r-- 1 root root    0 Oct  12 08:31 testfile
-```
-
-Kết quả trên cho ta thấy, dữ liệu đã được replicate sang node2.
-
-<a name="3"></a>
-## 3. Tham khảo
-
-- http://www.learnitguide.net/2016/07/how-to-install-and-configure-drbd-on-linux.html
+- http://www.learnitguide.net/2016/07/what-is-drbd-how-drbd-works-drbd.html
+- Bonus: https://ngocdinhwanka.wordpress.com/2012/12/11/408/
