@@ -93,9 +93,9 @@ Name        : drbd84-utils-sysvinit
 Name        : kmod-drbd84
 ```
 
-- Sau khi chạy lệnh trên, chúng ta thấy phiên bản hiện tại là **drbd84**
+Sau khi chạy lệnh trên, chúng ta thấy phiên bản hiện tại là **drbd84**
 
-Chúng ta tiếp tục bước cài đặt DRBD trên cả 2 server.
+- Chúng ta tiếp tục bước cài đặt DRBD trên cả 2 server.
 
 ```
 yum -y install drbd84-utils kmod-drbd84
