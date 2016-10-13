@@ -54,7 +54,7 @@ Network: 192.168.100.0/24
 <a name="2.1"></a>
 ### 2.1 Cài đặt DRBD
 
-Trước khi cài đặt, chúng ta phải cấu hình hostname cho mỗi node và ghi chúng vào `hosts`
+- Trước khi cài đặt, chúng ta phải cấu hình hostname cho mỗi node và ghi chúng vào `hosts`
 
 ```
 [root@node1 ~] hostnamectl set-hostname node1
@@ -64,7 +64,7 @@ Trước khi cài đặt, chúng ta phải cấu hình hostname cho mỗi node v
 [root@node2 ~] hostnamectl set-hostname node2
 ```
 
-Ghi thêm vào `hosts` của mỗi server
+- Ghi thêm vào `hosts` của mỗi server
 
 ```
 vi /etc/hosts
@@ -76,14 +76,14 @@ vi /etc/hosts
 192.168.100.197 node2
 ```
 
-Tiếp theo, chúng ta cài đặt DRBD trên cả 2 server. Đầu tiên, chúng ta thêm repos của DRBD và key 
+- Tiếp theo, chúng ta cài đặt DRBD trên cả 2 server. Đầu tiên, chúng ta thêm repos của DRBD và key 
 
 ```
 rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
 pm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
 ``` 
 
-Trước khi cài, chúng ta kiểm tra phiên bản mới nhất của DRBD.
+- Trước khi cài, chúng ta kiểm tra phiên bản mới nhất của DRBD.
 
 ```
 yum info *drbd* | grep Name
@@ -93,7 +93,7 @@ Name        : drbd84-utils-sysvinit
 Name        : kmod-drbd84
 ```
 
-Sau khi chạy lệnh trên, chúng ta thấy phiên bản hiện tại là **drbd84**
+- Sau khi chạy lệnh trên, chúng ta thấy phiên bản hiện tại là **drbd84**
 
 Chúng ta tiếp tục bước cài đặt DRBD trên cả 2 server.
 
@@ -107,13 +107,13 @@ yum -y install drbd84-utils kmod-drbd84
 rpm --import /etc/pki/rpm-gpg/*
 ```
 
-Kích hoạt module DRBD trên cả 2 server
+- Kích hoạt module DRBD trên cả 2 server
 
 ```
 modprobe drbd
 ```
 
-Kiểm tra lại xem DRBD đã hoạt động:
+- Kiểm tra lại xem DRBD đã hoạt động:
 
 ```
 lsmod | grep drbd
