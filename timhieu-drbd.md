@@ -35,13 +35,26 @@ DRBD cũng có thể hỗ trợ chế độ Active - Active, điều đó có ng
 DRBD hỗ trợ 3 chế độ replication, cụ thể như sau:
 
 ### 3.1 Protocol A <a name="3.1"></a>
+
+- Giao thức đồng bộ không đồng thời. Các thao tác ghi dữ liệu trên node chính sẽ được thực thi đến khi nào hoàn thành tác vụ, các gói tin replication được lưu trữ ở bộ đệm TCP. Trong trường hợp fail-over, dữ liệu này có thể bị mất.
+
 ### 3.2 Protocol B <a name="3.2"></a>
+
+- Giao thức đồng bộ đồng thời trên RAM (semi-synchronous), các thao tác ghi được thực hiện trên node chính ngay khi có yêu cầu, các gói tin replication được gửi ngay khi node chính đã ghi xong.
+Khi fail-over, dữ liệu sẽ bị mất.
+
 ### 3.3 Protocol C <a name="3.3"></a>
+
+- Giao thức đồng bộ, dữ liệu được ghi hoàn thiện chỉ khi nào 2 node chính và phụ xác nhận là đã hoàn thành. Giao thức này đảm bảo tính an toàn dữ liệu và được sử dụng phổ biến khi cấu hình DRBD.
+
 ## 4. Cấu trúc của DRBD <a name="4"></a>
 
 DRBD được chia làm 2 thành phần:
 
+<img width=150% src="http://i1363.photobucket.com/albums/r714/HoangLove9z/DRDB%20Architecture_zpsbij78rwi.jpg" />
+
 - Module trong kernel có nhiệm vụ thiết lập các space-user dùng để quản lý các disk DRBD, nó thực hiện các quyền điều khiển với các thiết bị virtual block (khi replicate dữ liệu local với sang máy remote). Giống như một virtual disk, DRBD cung cấp một mô hình linh loạt cho hầu hết các loại ứng dụng đều có thể sử dụng.
+- Các module DRBD khởi tạo những chỉ dẫn các điểu khiển cơ bản được khai báo trong brbd.conf, ngoài ra còn phân định ra các thành phần được xác định bởi IP và Port
 
 Một vài câu lệnh dùng để quản lý cài đặt DRBD:
 
