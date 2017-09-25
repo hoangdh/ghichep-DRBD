@@ -1,20 +1,20 @@
-# Hướng dẫn cài dặt và cấu hình DRBD cluster trên CentOS 7
+# Hướng dẫn cài đặt và cấu hình DRBD trên CentOS 7
 
 ### Menu
 
-[1. Chuẩn bị] (#1)
+[1. Chuẩn bị](#1)
 
-[2. Các bước tiến hành] (#2)
+[2. Các bước tiến hành](#2)
 
-- [2.1 Cài đặt DRBD] (#2.1)
-- [2.2 Cấu hình DRBD] (#2.2)
-- [2.3 Khởi động trên mỗi node] (#2.3)
-- [2.4 Bật và kích hoạt DRBD daemon] (#2.4)
-- [2.5 Kích hoạt trên node chính] (#2.5)
-- [2.6 Tạo mà mount file system DRBD] (#2.6)
-- [2.7 Test hoạt động replicate] (#2.7)
+- [2.1 Cài đặt DRBD](#2.1)
+- [2.2 Cấu hình DRBD](#2.2)
+- [2.3 Khởi động trên mỗi node](#2.3)
+- [2.4 Bật và kích hoạt DRBD daemon](#2.4)
+- [2.5 Kích hoạt trên node chính](#2.5)
+- [2.6 Tạo mà mount file system DRBD](#2.6)
+- [2.7 Test hoạt động replicate](#2.7)
 
-[3. Tham khảo] (#3)
+[3. Tham khảo](#3)
 
 <a name="1"></a>
 ## 1. Chuẩn bị
@@ -182,7 +182,7 @@ Trên server 1:
 Trên server 2:
 
 ```
-[root@node2 ~] drbdadm create-md testdata2
+[root@node2 ~] drbdadm create-md testdata1
 ```
 
 Khi thấy kết quả hiển thị như sau báo hiệu đã cấu hình thành công:
