@@ -2,15 +2,15 @@
 
 ### Menu
 
-[1. DRBD là gì?] (#1)
+[1. DRBD là gì?](#1)
 
-[2. Quá trình hoạt động cơ bản của DRBD] (#2)
+[2. Quá trình hoạt động cơ bản của DRBD](#2)
 
-[3. Các chế độ replication của DRBD] (#3)
+[3. Các chế độ replication của DRBD](#3)
 
-- [3.1 Protocol A] (#3.1)
-- [3.2 Protocol B] (#3.2)
-- [3.3 Protocol C] (#3.3)
+- [3.1 Protocol A](#3.1)
+- [3.2 Protocol B](#3.2)
+- [3.3 Protocol C](#3.3)
     
 [4. Cấu trúc của DRBD] (#4)
 
