@@ -157,7 +157,7 @@ on node2 {
 **Giải thích:**
 
 - `resource testdata1`: Tên của resource
-- `Protocol C`: Các resource được cấu hình để synchronous replication. Chi tiết <a href="http://www.learnitguide.net/2016/07/what-is-drbd-how-drbd-works-drbd.html">tại đây</a>
+- `Protocol C`: Các resource được cấu hình để synchronous replication. Chi tiết [tại đây](README.md)
 - `node1`, `node2`: Danh sách các node và các tùy chọn bên trong
 - `device /dev/drbd0`: Xác định thiết bị logic được DRBD sử dụng (Nên đặt giống nhau ở trên 2 server)
 - `disk /dev/sdb`: Xác định thiết bị vật lý dùng để tạo ra thiết bị logic bên trên, và không nhất thiết phải cùng trên trên 2 server.
