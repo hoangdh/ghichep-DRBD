@@ -2,21 +2,19 @@
 
 ### Menu
 
-[1. Chuẩn bị](#1)
-
-[2. Các bước tiến hành](#2)
-
-- [2.1 Cài đặt DRBD](#2.1)
-- [2.2 Cấu hình DRBD](#2.2)
-- [2.3 Khởi động trên mỗi node](#2.3)
-- [2.4 Bật và kích hoạt DRBD daemon](#2.4)
-- [2.5 Kích hoạt trên node chính](#2.5)
-- [2.6 Tạo mà mount file system DRBD](#2.6)
-- [2.7 Test hoạt động replicate](#2.7)
-
-[3. Tham khảo](#3)
+- [1. Chuẩn bị](#1)
+- [2. Các bước tiến hành](#2)
+	- [2.1 Cài đặt DRBD](#2.1)
+	- [2.2 Cấu hình DRBD](#2.2)
+	- [2.3 Khởi động trên mỗi node](#2.3)
+	- [2.4 Bật và kích hoạt DRBD daemon](#2.4)
+	- [2.5 Kích hoạt trên node chính](#2.5)
+	- [2.6 Tạo mà mount file system DRBD](#2.6)
+	- [2.7 Test hoạt động replicate](#2.7)
+- [3. Tham khảo](#3)
 
 <a name="1"></a>
+
 ## 1. Chuẩn bị
 
 - 2 server sử dụng OS CentOS
@@ -53,9 +51,11 @@ Network: 192.168.100.0/24
 <img src="https://camo.githubusercontent.com/bf6d9f67c22c5f4944f5fa334789e63ca5d5c64c/687474703a2f2f696d6167652e70726e747363722e636f6d2f696d6167652f37653965316132366537656634623630393361663633383434393135303532652e706e67" width=75% />
 
 <a name="2"></a>
+
 ## 2. Các bước tiến hành
 
 <a name="2.1"></a>
+
 ### 2.1 Cài đặt DRBD
 
 - Trước khi cài đặt, chúng ta phải cấu hình hostname cho mỗi node và ghi chúng vào `hosts`
@@ -127,6 +127,7 @@ libcrc32c              12644  2 xfs,drbd
 ```
 
 <a name="2.2"></a>
+
 ### 2.2 Cấu hình DRBD
 
 File cấu hình chính của DRBD nằm là ` /etc/drbd.conf`. File này gọi lại các file cấu hình được khai báo trong phần nội dung. Các file `.res` dùng để khai báo tài nguyên trên mỗi server mà DRBD sử dụng.
@@ -171,6 +172,7 @@ Sao chép file cấu hình sang server 2:
 ```
 
 <a name="2.3"></a>
+
 ### 2.3 Khởi động trên mỗi node
 
 Trên server 1:
@@ -199,6 +201,7 @@ success
 ```
 
 <a name="2.4"></a>
+
 ### 2.4 Bật và kích hoạt DRBD daemon
 
 Ở trên 2 server, chúng ta bật và cho DRBD khởi động cùng hệ thống
