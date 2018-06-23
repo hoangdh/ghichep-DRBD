@@ -3,17 +3,12 @@
 ### Menu
 
 [1. DRBD là gì?](#1)
-
 [2. Quá trình hoạt động cơ bản của DRBD](#2)
-
 [3. Các chế độ replication của DRBD](#3)
-
 - [3.1 Protocol A](#3.1)
 - [3.2 Protocol B](#3.2)
-- [3.3 Protocol C](#3.3)
-    
+- [3.3 Protocol C](#3.3)    
 [4. Cấu trúc của DRBD](#4)
-
 [5. Tham khảo](#5)
 
 ## 1. DRBD là gì? <a name="1"></a>
@@ -66,3 +61,9 @@ Một vài câu lệnh dùng để quản lý cài đặt DRBD:
 
 - http://www.learnitguide.net/2016/07/what-is-drbd-how-drbd-works-drbd.html
 - Bonus: https://ngocdinhwanka.wordpress.com/2012/12/11/408/
+
+**Đừng bỏ lỡ:**
+
+- [Cài đặt và cấu hình DRBD trên CentOS7](Cau-hinh-DRBD-co-ban-tren-CentOS.md)
+- [Cách khắc phục lỗi cơ bản của DRBD](Split-Brain.md)
+- [Tích hợp giữa DRBD, Pacemaker + Corosync để HA cho Web Server](https://github.com/hoangdh/ghichep-HA/blob/master/Pacemaker_Corosync/2.Huong-dan-Pacemaker-Corosync-cho-Web-DRBD-CentOS.md)

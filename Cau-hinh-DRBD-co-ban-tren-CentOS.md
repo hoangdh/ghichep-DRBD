@@ -289,3 +289,8 @@ Kết quả trên cho ta thấy, dữ liệu đã được replicate sang node2.
 ## 3. Tham khảo
 
 - http://www.learnitguide.net/2016/07/how-to-install-and-configure-drbd-on-linux.html
+
+**Đừng bỏ lỡ:**
+
+- [Cách khắc phục lỗi cơ bản của DRBD](Split-Brain.md)
+- [Tích hợp giữa DRBD với Pacemaker + Corosync để HA cho Web Server](https://github.com/hoangdh/ghichep-HA/blob/master/Pacemaker_Corosync/2.Huong-dan-Pacemaker-Corosync-cho-Web-DRBD-CentOS.md)
