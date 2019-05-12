@@ -84,7 +84,7 @@ vi /etc/hosts
 
 ```
 rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-pm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
 ``` 
 
 - Trước khi cài, chúng ta kiểm tra phiên bản mới nhất của DRBD.
