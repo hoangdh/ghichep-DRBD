@@ -21,7 +21,7 @@ Về tổng quan, DRBD gồm 2 server cung cấp 2 tài nguyên lưu trữ độ
 
 Nhìn chung, các dịch vụ đồng bộ dữ liệu hoạt động ở chế độ Active - Passive. Ở chế độ này, node chính (primary) sẽ lắng nghe toàn bộ các thao tác (đọc, ghi) của người dùng. Node phụ (secondary) sẽ được kích hoạt thành node chính khi một giải pháp cluster nào đó phát hiện node chính down. Việc ghi dữ liệu sẽ được xảy ra đồng thời trên cả 2 node. DRBD hỗ trợ 2 kiểu ghi dữ liệu là fully synchronous and asynchronous.
 
-<img width=100% src="images/DRDB-Architecture.jpg" />
+![DRDB-Operations](images/DRDB-Operations.jpg)
 
 DRBD cũng có thể hỗ trợ chế độ Active - Active, điều đó có nghĩa là việc ghi dữ liệu sẽ đồng thời xảy ra trên 2 node. Mode này được dựa trên một hệ thống chia sẻ tập tin, chẳng hạn như Global File System (GFS) hoặc các phiên bản Oracle Cluster File System 2 (OCFS2), trong đó bao gồm khả năng phân phối và quản lý file. 
 
@@ -46,7 +46,7 @@ Khi fail-over, dữ liệu sẽ bị mất.
 
 DRBD được chia làm 2 thành phần:
 
-![DRDB-Operations](images/DRDB-Operations.jpg)
+<img width=100% src="images/DRDB-Architecture.jpg" />
 
 - Module trong kernel có nhiệm vụ thiết lập các space-user dùng để quản lý các disk DRBD, nó thực hiện các quyền điều khiển với các thiết bị virtual block (khi replicate dữ liệu local với sang máy remote). Giống như một virtual disk, DRBD cung cấp một mô hình linh loạt cho hầu hết các loại ứng dụng đều có thể sử dụng.
 - Các module DRBD khởi tạo những chỉ dẫn các điểu khiển cơ bản được khai báo trong brbd.conf, ngoài ra còn phân định ra các thành phần được xác định bởi IP và Port
